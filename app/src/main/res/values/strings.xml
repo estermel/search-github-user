@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GitHub User</string>
+    <string name="query_hint">Search Github User</string>
+    <string name="text_no_username_anymore_found">this is the last page</string>
+    <string name="text_menu_reset">Reset username</string>
+    <string name="ic_error">ic error</string>
+    <string name="user_avatar">user avatar</string>
+</resources>
+
