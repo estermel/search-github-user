@@ -10,6 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
+import timber.log.Timber
 
 class GitHubUsersPresenter(private var view: GitHubUsersContract.View) :
     GitHubUsersContract.Presenter {
@@ -47,18 +48,15 @@ class GitHubUsersPresenter(private var view: GitHubUsersContract.View) :
     @SuppressLint("CheckResult")
     override fun getGitHubUsers(query: String?, page: Int, perPage: Int) {
         disposables = CompositeDisposable()
-
         val service = ClientAPI.instance.create(GitHubAPI::class.java)
-
-
         val observable = service.getUsers(query, page, perPage)
 
-        observable.subscribeOn(Schedulers.io())
+        observable.subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
 
         observable.subscribe(object : Observer<GitHubUsers> {
             override fun onComplete() {
-                onDestroy()
+                Timber.d("onComplete")
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -71,7 +69,10 @@ class GitHubUsersPresenter(private var view: GitHubUsersContract.View) :
 
             override fun onError(e: Throwable) {
                 if (e is HttpException) onHttpExceptionCaught(e.code())
-                else onFailed(e.localizedMessage)
+                else {
+                    onFailed(e.localizedMessage)
+                    e.printStackTrace()
+                }
             }
         })
     }
